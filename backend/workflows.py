@@ -10,6 +10,7 @@ class OrderSupervisorWorkflow:
     def __init__(self) -> None:
         self.state = "AWAKE"
         self.events = []
+        self.processed_events_count = 0
         self.instructions = []
         self.memory = {}
         self.is_completed = False
@@ -89,16 +90,20 @@ class OrderSupervisorWorkflow:
                 
             # Run Agent
             latest_instruction = self.instructions[-1] if self.instructions else ""
+            unprocessed_events = self.events[self.processed_events_count:]
+            
             agent_decision_dict = await workflow.execute_activity(
                 execute_agent,
                 {
                     "order_context": self.order_context,
                     "memory": self.memory,
-                    "events": self.events[-5:], # only pass recent events
+                    "events": unprocessed_events,
                     "instruction": latest_instruction
                 },
                 start_to_close_timeout=timedelta(minutes=2)
             )
+            
+            self.processed_events_count += len(unprocessed_events)
             
             decision = agent_decision_dict.get("decision", "SLEEP")
             actions = agent_decision_dict.get("actions", [])
