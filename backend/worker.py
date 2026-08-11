@@ -4,8 +4,11 @@ from temporalio.worker import Worker
 from workflows import OrderSupervisorWorkflow
 from activities import execute_agent, execute_business_action, record_workflow_state, record_final_summary
 
+import os
+
 async def main():
-    client = await Client.connect("localhost:7233")
+    temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
+    client = await Client.connect(temporal_host)
     
     worker = Worker(
         client,
