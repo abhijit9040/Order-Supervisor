@@ -7,7 +7,7 @@ from activities import execute_agent, execute_business_action, record_workflow_s
 import os
 
 async def main():
-    temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
+    temporal_host = os.environ.get("TEMPORAL_HOST", "localhost:7233")
     client = await Client.connect(temporal_host)
     
     worker = Worker(

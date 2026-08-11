@@ -15,8 +15,9 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Order Supervisor API")
 
 import os
+
 async def get_temporal_client():
-    temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
+    temporal_host = os.environ.get("TEMPORAL_HOST", "localhost:7233")
     return await Client.connect(temporal_host)
 
 @app.get("/api/supervisors", response_model=List[schemas.SupervisorResponse])
